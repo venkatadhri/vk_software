@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://vk-soft.com/sitemap.xml
+
+# Disallow specific files
+Disallow: /emailjs-config.md
+Disallow: /deployment-guide.md
+Disallow: /.git/
+Disallow: /README.md
+
+# Allow important resources
+Allow: /css/
+Allow: /js/
+Allow: /assets/
