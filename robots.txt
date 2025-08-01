@@ -4,6 +4,14 @@ Allow: /
 # Sitemap
 Sitemap: https://vk-soft.com/sitemap.xml
 
+# Disallow unnecessary files
+Disallow: /README.md
+Disallow: /DEPLOYMENT-CHECKLIST.md
+Disallow: /*.md
+
+# Sitemap
+Sitemap: https://vk-soft.com/sitemap.xml
+
 # Disallow specific files
 Disallow: /emailjs-config.md
 Disallow: /deployment-guide.md

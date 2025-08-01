@@ -1,20 +1,20 @@
-// Modern JavaScript with ES6+ features for VK Software website
-
-// Initialize EmailJS
-(function() {
-    emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your EmailJS user ID
-})();
+// VK Software - Fully Dynamic Static Website
+// No external dependencies - Pure JavaScript implementation
 
 // DOM Content Loaded Event
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🌊 VK Software - Ocean Theme Loaded');
+
     // Initialize all components
     initializeNavigation();
     initializeAnimations();
     initializeCounters();
-    initializePortfolioFilter();
-    initializeContactForm();
+    initializeEmailRedirect();
+    initializeCallFunctionality();
     initializeSmoothScrolling();
     initializeScrollEffects();
+    initializeDynamicContent();
+
 });
 
 // Navigation functionality
@@ -38,14 +38,14 @@ function initializeNavigation() {
         });
     });
 
-    // Navbar scroll effect
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
+    // Navbar scroll effect - DISABLED to maintain constant color
+    // window.addEventListener('scroll', () => {
+    //     if (window.scrollY > 100) {
+    //         navbar.classList.add('scrolled');
+    //     } else {
+    //         navbar.classList.remove('scrolled');
+    //     }
+    // });
 
     // Active navigation link highlighting
     const sections = document.querySelectorAll('section[id]');
@@ -69,14 +69,43 @@ function initializeNavigation() {
     });
 }
 
-// Initialize AOS animations
+// Initialize custom animations (replacing AOS)
 function initializeAnimations() {
-    AOS.init({
-        duration: 800,
-        easing: 'ease-in-out',
-        once: true,
-        offset: 100
+    // Custom animation observer
+    const animationObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                const animationType = element.getAttribute('data-aos') || 'fade-up';
+                const delay = element.getAttribute('data-aos-delay') || 0;
+
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                    element.classList.add('aos-animate');
+                }, delay);
+
+                animationObserver.unobserve(element);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
     });
+
+    // Initialize all elements with data-aos attributes
+    const animatedElements = document.querySelectorAll('[data-aos]');
+    animatedElements.forEach(element => {
+        // Set initial state
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'all 0.8s ease-in-out';
+
+        // Observe for animation
+        animationObserver.observe(element);
+    });
+
+    console.log(`✅ Custom animations initialized for ${animatedElements.length} elements`);
 }
 
 // Animated counters for statistics
@@ -118,144 +147,214 @@ function animateCounter(element, target) {
     }, 40);
 }
 
-// Portfolio filter functionality
-function initializePortfolioFilter() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
+// Dynamic service highlighting
+function initializeServiceHighlighting() {
+    const serviceCards = document.querySelectorAll('.service-card');
 
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            button.classList.add('active');
+    serviceCards.forEach((card, index) => {
+        // Add staggered animation delay
+        card.style.animationDelay = `${index * 0.1}s`;
 
-            const filterValue = button.getAttribute('data-filter');
+        // Add interactive hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+            this.style.boxShadow = '0 20px 40px rgba(6, 182, 212, 0.4)';
+        });
 
-            portfolioItems.forEach(item => {
-                const itemCategory = item.getAttribute('data-category');
-                
-                if (filterValue === 'all' || itemCategory === filterValue) {
-                    item.style.display = 'block';
-                    item.classList.add('fade-in');
-                } else {
-                    item.style.display = 'none';
-                    item.classList.remove('fade-in');
-                }
-            });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.boxShadow = '0 8px 25px rgba(6, 182, 212, 0.2)';
         });
     });
+
+    console.log(`✅ Service highlighting initialized for ${serviceCards.length} cards`);
 }
 
-// Contact form functionality (Local Development Version)
-function initializeContactForm() {
-    const contactForm = document.getElementById('contact-form');
+// Email redirect functionality - Opens Gmail with pre-filled content
+function initializeEmailRedirect() {
+    const emailButton = document.getElementById('email-us-btn');
 
-    if (!contactForm) {
-        console.error('Contact form not found');
+    if (!emailButton) {
+        console.log('Email button not found - contact form may have been removed');
         return;
     }
 
-    contactForm.addEventListener('submit', async (e) => {
+    emailButton.addEventListener('click', function(e) {
         e.preventDefault();
 
-        // Validate all fields first
-        const formInputs = contactForm.querySelectorAll('input[required], select[required], textarea[required]');
-        let isValid = true;
+        // Pre-filled email content
+        const emailData = {
+            to: 'enquiry@vk-soft.com',
+            subject: 'Inquiry about VK Software Training & Services',
+            body: `Hello VK Software Team,
 
-        formInputs.forEach(input => {
-            if (!validateField({ target: input })) {
-                isValid = false;
-            }
-        });
+I am interested in learning more about your services. Please provide information about:
 
-        if (!isValid) {
-            showNotification('Please fill in all required fields correctly.', 'error');
-            return;
-        }
+□ Software Training Programs
+□ Consulting Services
+□ Custom Development
+□ Other: _______________
 
-        const submitButton = contactForm.querySelector('button[type="submit"]');
-        const buttonText = submitButton.querySelector('.btn-text');
-        const buttonLoading = submitButton.querySelector('.btn-loading');
+My Details:
+Name:
+Phone:
+Preferred Contact Time:
 
-        // Show loading state
-        submitButton.classList.add('loading');
-        if (buttonText) buttonText.style.opacity = '0';
-        if (buttonLoading) buttonLoading.style.opacity = '1';
+Message:
 
-        // Get form data
-        const formData = new FormData(contactForm);
-        const contactData = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            service: formData.get('service'),
-            message: formData.get('message')
+
+Best regards,`
         };
 
-        // Log form data for local testing
-        console.log('📧 Contact Form Submission:', contactData);
+        // Create Gmail compose URL
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailData.to)}&su=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`;
 
-        try {
-            // Simulate form submission delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+        // Open Gmail in new tab
+        window.open(gmailUrl, '_blank');
 
-            // Check if EmailJS is available and configured
-            if (typeof emailjs !== 'undefined' &&
-                !emailjs.init.toString().includes('YOUR_EMAILJS_USER_ID')) {
+        // Show notification
+        showNotification('📧 Opening Gmail with pre-filled email content...', 'success');
 
-                // Try to send with EmailJS if properly configured
-                const response = await emailjs.send(
-                    'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
-                    'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
-                    {
-                        from_name: contactData.name,
-                        from_email: contactData.email,
-                        phone: contactData.phone,
-                        service: contactData.service,
-                        message: contactData.message,
-                        to_email: 'hello@vk-soft.com'
-                    }
-                );
+        console.log('📧 Gmail redirect initiated:', emailData);
+    });
 
-                if (response.status === 200) {
-                    showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
-                    contactForm.reset();
-                } else {
-                    throw new Error('EmailJS failed');
-                }
-            } else {
-                // Local development mode - simulate success
-                showNotification('✅ Form submitted successfully! (Local Development Mode)\n📧 Check browser console for form data.', 'success');
-                contactForm.reset();
+    console.log('✅ Email redirect initialized successfully');
+}
 
-                // Clear any existing errors
-                const errorMessages = contactForm.querySelectorAll('.error-message');
-                errorMessages.forEach(error => error.remove());
+// Call functionality with device detection
+function initializeCallFunctionality() {
+    const callBtn = document.getElementById('call-now-btn');
+    const phoneLinks = document.querySelectorAll('.phone-link');
+    const phoneNumber = '+917090774411';
+    const displayNumber = '(+91) 7090774411';
 
-                const errorInputs = contactForm.querySelectorAll('.error');
-                errorInputs.forEach(input => input.classList.remove('error'));
-            }
+    // Function to detect if device is mobile
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
+    }
 
-        } catch (error) {
-            console.error('Form Submission Error:', error);
-            showNotification('⚠️ This is a demo form. In production, configure EmailJS for real email sending.\n📧 Check browser console for submitted data.', 'error');
-        } finally {
-            // Reset button state
-            submitButton.classList.remove('loading');
-            if (buttonText) buttonText.style.opacity = '1';
-            if (buttonLoading) buttonLoading.style.opacity = '0';
+    // Function to handle call button click
+    function handleCallClick(e) {
+        if (isMobileDevice()) {
+            // On mobile: Allow default tel: link behavior (opens dialer)
+            showNotification('📱 Opening dialer...', 'success');
+            return true; // Allow default action
+        } else {
+            // On desktop: Prevent default and show phone number
+            e.preventDefault();
+            showPhoneNumberModal(displayNumber);
+            return false;
+        }
+    }
+
+    // Add event listener to main call button
+    if (callBtn) {
+        callBtn.addEventListener('click', handleCallClick);
+    }
+
+    // Add event listeners to phone links in contact section
+    phoneLinks.forEach(link => {
+        link.addEventListener('click', handleCallClick);
+    });
+
+    console.log('✅ Call functionality initialized successfully');
+}
+
+// Show phone number modal for desktop users
+function showPhoneNumberModal(phoneNumber) {
+    // Remove existing modal if any
+    const existingModal = document.getElementById('phone-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'phone-modal';
+    modal.className = 'phone-modal';
+    modal.innerHTML = `
+        <div class="phone-modal-content">
+            <div class="phone-modal-header">
+                <h3><i class="fas fa-phone"></i> Call VK Software</h3>
+                <button class="phone-modal-close" onclick="closePhoneModal()">&times;</button>
+            </div>
+            <div class="phone-modal-body">
+                <p>Please call us at:</p>
+                <div class="phone-number-display">
+                    <span class="phone-number">${phoneNumber}</span>
+                    <button class="copy-phone-btn" onclick="copyPhoneNumber('${phoneNumber}')">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <p class="phone-modal-note">
+                    <i class="fas fa-info-circle"></i> For all enquiries and support
+                </p>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Show modal with animation
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closePhoneModal();
         }
     });
+}
 
-    // Form validation
-    const formInputs = contactForm.querySelectorAll('input, select, textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('blur', validateField);
-        input.addEventListener('input', clearFieldError);
-    });
+// Close phone number modal
+function closePhoneModal() {
+    const modal = document.getElementById('phone-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+}
 
-    console.log('✅ Contact form initialized successfully');
+// Copy phone number to clipboard
+function copyPhoneNumber(phoneNumber) {
+    // Remove formatting for copying
+    const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(cleanNumber).then(() => {
+            showNotification('📋 Phone number copied to clipboard!', 'success');
+        }).catch(() => {
+            fallbackCopyTextToClipboard(cleanNumber);
+        });
+    } else {
+        fallbackCopyTextToClipboard(cleanNumber);
+    }
+}
+
+// Fallback copy function for older browsers
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        document.execCommand('copy');
+        showNotification('📋 Phone number copied to clipboard!', 'success');
+    } catch (err) {
+        showNotification('❌ Unable to copy phone number', 'error');
+    }
+
+    document.body.removeChild(textArea);
 }
 
 // Field validation function
@@ -520,22 +619,110 @@ function initializeLazyLoading() {
     images.forEach(img => imageObserver.observe(img));
 }
 
-// Add CSS animations keyframes dynamically
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+// Dynamic content initialization
+function initializeDynamicContent() {
+    // Add dynamic year to footer
+    const currentYear = new Date().getFullYear();
+    const footerYear = document.querySelector('.footer-bottom p');
+    if (footerYear) {
+        footerYear.textContent = `© ${currentYear} VK Software. All rights reserved.`;
     }
-    
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    
-    .error {
-        border-color: #ef4444 !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
-    }
-`;
-document.head.appendChild(style);
+
+    // Add dynamic loading states
+    addDynamicStyles();
+
+    // Initialize dynamic interactions
+    initializeDynamicInteractions();
+
+    console.log('✅ Dynamic content initialized');
+}
+
+// Add dynamic CSS styles
+function addDynamicStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Dynamic Animation Keyframes */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dynamic interaction styles */
+        .dynamic-hover {
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+        }
+
+        .loading-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize dynamic interactions
+function initializeDynamicInteractions() {
+    // Add hover effects to service cards
+    const serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach(card => {
+        card.classList.add('dynamic-hover');
+    });
+
+    // Add click effects to buttons
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.add('loading-pulse');
+            setTimeout(() => {
+                this.classList.remove('loading-pulse');
+            }, 1000);
+        });
+    });
+
+    // Add scroll-triggered animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-up');
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for scroll animations
+    const animateElements = document.querySelectorAll('.service-card, .contact-item, .info-item');
+    animateElements.forEach(el => scrollObserver.observe(el));
+}
